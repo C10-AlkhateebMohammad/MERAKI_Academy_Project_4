@@ -1,9 +1,9 @@
 const express=require("express")
 const userrouter=express.Router();
-const {creatNewUser}=require('../controllers/users')
+const {creatNewUser,loginUser}=require('../controllers/users')
 
 
 userrouter.post('/register',creatNewUser)
-//userrouter.post('/login',loginUser)
+userrouter.post('/login',loginUser)
 
 module.exports=userrouter
