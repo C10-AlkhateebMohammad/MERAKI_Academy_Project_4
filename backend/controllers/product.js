@@ -1,8 +1,8 @@
 const productModel=require('../models/productSchema')
 
 const creatNewProduct = (req, res) => {
-    const {Name, price, description, images, brand} = req.body;
-    const newProduct = new productModel({Name, price, description, images, brand});
+    const {Name, price,categoryId, images, brand} = req.body;
+    const newProduct = new productModel({Name, price,categoryId, images, brand});
     newProduct.save()
         .then((result) => {
             res.status(201).json({

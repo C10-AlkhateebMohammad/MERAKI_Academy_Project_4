@@ -8,9 +8,11 @@ const productSchema=new mongoose.Schema({
         type : String,
 
     },
-    description : {
-        type : String
-    },
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+      },
+    
     images : {
         type : [String]
     },

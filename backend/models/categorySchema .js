@@ -4,16 +4,13 @@ const categorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true // يجب أن يكون اسم الفئة فريدًا
+    unique: true 
   },
   description: {
     type: String,
     required: true
   },
-  products: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product'
-  }],
+
   createdAt: {
     type: Date,
     default: Date.now

@@ -22,6 +22,32 @@ const createCategory = async (req, res) => {
     }
 };
 
+const getAllcaetgories = async (req, res) => {
+    try {
+
+        const category = await Category.find();
+
+        if (!category.length) {
+            return res.status(404).json({
+                success: false,
+                message : "no catigories exist"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            categories: category,
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: `خطأ في الخادم`,
+            error: err.message,
+        });
+    }
+};
+
 module.exports = {
-    createCategory
+    createCategory,
+    getAllcaetgories
 };

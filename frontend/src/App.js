@@ -4,27 +4,29 @@ import NavBar from './components/NavBar';
 import { Route, Routes } from 'react-router-dom';
 import Register from './components/Register';
 import axios from 'axios';
-const App = () => {
-  const [products, setProducts] = useState([]);
+import Product from './components/Product';
+import { createContext } from 'react';
 
-  useEffect(() => {
-    axios.get("http://localhost:5000/product")
-      .then(response => {
-        setProducts(response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching products:", error);
-      });
-  }, []);
-  return (
-      
+export const UserContext=createContext()
+const App = () => {
+const [product, setProduct] = useState([])
+ 
+return (
+  <UserContext.Provider value={{product, setProduct}}>
     <div className="App">
-   <Routes>
-   <Route path='/' element={<NavBar />} />
-      <Route path='/register' element={<Register products={products}/>}/> 
-   </Routes>
-  </div>
-  )
+      <header>
+        <NavBar />
+      </header>
+
+      <main>
+        <Routes>
+          <Route path="/" element={<Product />} />
+            
+        </Routes>
+      </main>
+    </div>
+  </UserContext.Provider>
+);
 }
 
 export default App

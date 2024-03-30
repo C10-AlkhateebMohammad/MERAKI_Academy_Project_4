@@ -13,12 +13,14 @@ const productRouter=require('./routes/product')
 const cartRouter=require('./routes/cart')
 const rolesRouter = require("./routes/roles");
 const categoryRouter=require("./routes/category")
+const visitRouter=require('./routes/vistCounter')
 
 app.use('/users',userRouter)
 app.use('/product',productRouter)
 app.use('/cart',cartRouter)
 app.use("/roles", rolesRouter);
 app.use('/category',categoryRouter)
+app.use('/visit',visitRouter)
 
 
 // Handles any other endpoints [unassigned - endpoints]

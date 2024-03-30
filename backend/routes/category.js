@@ -1,10 +1,12 @@
 const express=require("express")
 const categoryRouter=express.Router();
-const {createCategory}=require('../controllers/category')
+const {createCategory,getAllcaetgories}=require('../controllers/category')
 
 
 
 categoryRouter.post('/creat',createCategory)
+categoryRouter.get('/caetgories',getAllcaetgories)
+
 
 
 module.exports=categoryRouter
