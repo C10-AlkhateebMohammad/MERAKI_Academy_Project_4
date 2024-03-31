@@ -1,10 +1,8 @@
 const visitModel=require('../models/visitCounterSchema')
 const incrementPageVisit = async (pageUrl) => {
     try {
-        // ابحث عن عنصر VisitCounter المرتبط بالصفحة المعطاة
         let visitCounter = await visitModel.findOne({ pageUrl });
 
-        // إذا لم يتم العثور على العنصر، فقم بإنشاءه وضبط الزيارات إلى 1
         if (!visitCounter) {
             visitCounter = new visitModel({
                 pageUrl,

@@ -4,8 +4,8 @@ const jwt=require('jsonwebtoken')
 const rolesModel = require("../models/roles");
 
 const creatNewUser=(req,res)=>{
-    const {firstName,lastName,age,country,email,password,role}=req.body;
-    const newUser=new userModel({firstName,lastName,age,country,email,password,role : "6606a66ca5a6bdd391f90167"})
+    const {firstName,lastName,age,country,email,password}=req.body;
+    const newUser=new userModel({firstName,lastName,age,country,email,password})
     newUser.save()
     .then((resuilt)=>{
         res.status(201).json({success: true,

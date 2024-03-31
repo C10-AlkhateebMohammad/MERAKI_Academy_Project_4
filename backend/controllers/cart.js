@@ -21,7 +21,8 @@ const addToCart=(req,res)=>{
     .catch((err) => {
         res.status(409).json({
             success: false,
-            message: "Error Adding Product"
+            message: "Error Adding Product",
+          err:err
         });
     });
 }

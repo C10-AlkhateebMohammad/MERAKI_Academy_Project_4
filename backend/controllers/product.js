@@ -1,4 +1,5 @@
 const productModel=require('../models/productSchema')
+const bodyParser=require('querystring')
 
 const creatNewProduct = (req, res) => {
     const {Name, price,categoryId, images, brand} = req.body;
@@ -19,7 +20,15 @@ const creatNewProduct = (req, res) => {
 };
 
 const getAllProduct=(req,res)=>{
-    productModel.find({})
+    //const categoryId=req.qurey.categoryId
+    const {categoryId}=(bodyParser.parse(req.url.split('?')[1]))
+    const filter={
+
+    }
+   if(categoryId)
+    Object.assign(filter,{categoryId})
+    console.log(filter)
+    productModel.find(filter)
     .then((resuilt)=>{
         res.status(200).json({success: true,
             message: "All the product",
@@ -31,6 +40,7 @@ const getAllProduct=(req,res)=>{
             err: {err}})
     })
 }
+
 
 module.exports={
     creatNewProduct,

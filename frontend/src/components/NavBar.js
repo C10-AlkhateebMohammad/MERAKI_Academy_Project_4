@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -13,9 +12,13 @@ import Menu from '@mui/material/Menu';
 import Modal from '@mui/material/Modal';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
+import { Link } from 'react-router-dom';
+import Register from './Register';
+import { useEffect } from 'react';
 import axios from 'axios';
+import { UserContext } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -25,7 +28,7 @@ const Search = styled('div')(({ theme }) => ({
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
   marginLeft: 0,
-  width: 'auto', // Set width to auto to center the input
+  width: 'auto',
   [theme.breakpoints.up('sm')]: {
     marginLeft: theme.spacing(1),
     width: 'auto',
@@ -71,11 +74,13 @@ const modalStyle = {
 };
 
 export default function SearchAppBar() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [openModal, setOpenModal] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [categoryProducts, setCategoryProducts] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
+  const {selectedCategory, setselectedCategory}=React.useContext(UserContext)
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [openModal, setOpenModal] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [categoryProducts, setCategoryProducts] = React.useState([]);
+  const {cartItemsCount,setCartItemsCount}=React.useContext(UserContext)
+  const navigate = useNavigate();
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
@@ -85,6 +90,10 @@ export default function SearchAppBar() {
     setOpenModal(true);
     setAnchorEl(null);
   };
+  const logut=()=>{
+    navigate('/login')
+    
+  }
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -94,46 +103,24 @@ export default function SearchAppBar() {
     setAnchorEl(event.currentTarget);
     const category = event.currentTarget.textContent;
     if (category === 'Shoes') {
-      axios.get('http://localhost:5000/category/shoes')
-        .then((res) => {
-          setCategoryProducts(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      setCategoryProducts(/* Fetch products for Shoes category */);
     } else if (category === 'T-Shirts') {
-      axios.get('http://localhost:5000/category/t-shirts')
-        .then((res) => {
-          setCategoryProducts(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      setCategoryProducts(/* Fetch products for T-Shirts category */);
     }
   };
+  useEffect(()=>{
+    axios.get('http://localhost:5000/category/caetgories')
+    .then((res)=>{
+      setCategoryProducts(res.data.categories)
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+  },[])
 
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
-  const addToCart = (productId) => {
-    // Logic to add item to cart
-  };
-
-  const handleAddToCart = (productId) => {
-    console.log(`Product ${productId} added to cart.`);
-    addToCart(productId);
-  };
-
-  useEffect(() => {
-    axios.get('http://localhost:5000/category/categories')
-      .then((res) => {
-        setCategoryProducts(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -150,14 +137,23 @@ export default function SearchAppBar() {
             <MenuIcon />
           </IconButton>
           <Menu
-  id="menu-appbar"
-  anchorEl={anchorEl}
-  open={Boolean(anchorEl)}
-  onClose={handleMenuClose}
->
-  <MenuItem onClick={(event) => handleMenuClick(event, 'Shoes')}>Shoes</MenuItem>
-  <MenuItem onClick={(event) => handleMenuClick(event, 'T-Shirts')}>T-Shirts</MenuItem>
-</Menu>
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+           {
+           categoryProducts.map((item,i)=>{
+           return (
+            <MenuItem onClick={()=>{
+              setselectedCategory(item._id)
+              handleMenuClose()
+              console.log(item._id)
+            }}>{item.name}</MenuItem>
+           )
+           })
+           }
+          </Menu>
           <Typography
             variant="h6"
             noWrap
@@ -186,7 +182,19 @@ export default function SearchAppBar() {
             onClick={handleOpenModal}
           >
             <ShoppingCartIcon />
+            <Typography variant="caption">{cartItemsCount}</Typography>
           </IconButton>
+          {/* Login and Register Links */}
+          <Button color="inherit" component={Link} to="/login">
+            Login
+          </Button>
+          <Button color="inherit" component={Link} to="/register" element={<Register/>}>
+            Register
+          </Button>
+          <Link to='/login' onClick={()=>{
+            logut()
+          }}>Logout</Link>
+          
         </Toolbar>
       </AppBar>
       <Modal
@@ -197,16 +205,15 @@ export default function SearchAppBar() {
       >
         <Box sx={modalStyle}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Cart Items
+            Modal Title
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            {cartItems.map((item, index) => (
-              <div key={index}>
-                <p>{item.name}</p>
-                <p>{item.price}</p>
+            {categoryProducts.map(product => (
+              <div key={product.id}>
+                <p>{product.name}</p>
+                <p>{product.description}</p>
               </div>
             ))}
-            <Button variant="contained" onClick={handleCloseModal}>Check Out</Button>
           </Typography>
         </Box>
       </Modal>
