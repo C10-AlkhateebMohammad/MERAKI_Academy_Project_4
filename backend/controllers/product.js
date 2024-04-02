@@ -9,12 +9,13 @@ const creatNewProduct = (req, res) => {
             res.status(201).json({
                 success: true,
                 message: "Created Successfully",
+                resui:result
             });
         })
         .catch((err) => {
             res.status(409).json({
                 success: false,
-                message: "The email already exists"
+                message: ""
             });
         });
 };
@@ -30,9 +31,12 @@ const getAllProduct=(req,res)=>{
     console.log(filter)
     productModel.find(filter)
     .then((resuilt)=>{
+        console.log(resuilt)
         res.status(200).json({success: true,
             message: "All the product",
-            articles: {resuilt}})
+            articles: resuilt
+            
+         } )
     })
     .catch((err)=>{
         res.status(500).json({success: false,

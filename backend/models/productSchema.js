@@ -13,7 +13,7 @@ const productSchema=new mongoose.Schema({
         ref: 'Category'
       },
     
-    "images" : {
+    images : {
         type : [String]
     },
     brand : {

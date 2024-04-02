@@ -51,7 +51,7 @@ const loginUser = (req, res) => {
   
           console.log('payload', payload);
           const options = {
-            expiresIn: "2d",
+            expiresIn: "60m",
           };
           const token = jwt.sign(payload, process.env.SECRET, options);
           res.status(200).json({

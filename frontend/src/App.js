@@ -7,7 +7,8 @@ import axios from 'axios';
 import Product from './components/Product';
 import { createContext } from 'react';
 import Login from './components/Login';
-
+import Addproduct from './components/Addproduct';
+import ContactUs from './components/ContactUs';
 export const UserContext=createContext()
 const App = () => {
 const [product, setProduct] = useState([])
@@ -16,10 +17,11 @@ const [cartItemsCount, setCartItemsCount] = React.useState(0);
 const [login, setLogin] = useState()
 const tokenStoreg=localStorage.getItem("token")
 const [token, setToken] = useState(localStorage.getItem("token")||null)
-
+const [products, setProducts] = useState([]);
+const [searchQuery, setSearchQuery] = useState('')
 
 return (
-  <UserContext.Provider value={{product, setProduct,selectedCategory,setselectedCategory,cartItemsCount,setCartItemsCount,login,setLogin,token,setToken}}>
+  <UserContext.Provider value={{product, setProduct,selectedCategory,setselectedCategory,cartItemsCount,setCartItemsCount,login,setLogin,token,setToken,products,setProducts,searchQuery,setSearchQuery}}>
     <div className="App">
         <header>
           <NavBar/>
@@ -27,9 +29,11 @@ return (
 
         <main>
           <Routes>
+          <Route path='/login' element={<Login />}/>
             <Route path="/" element={<Product />} />
-            <Route path='/login' element={<Login />}/>
             <Route path='/register' element={<Register/> ? <Register/> : <NavBar/>}/>
+            <Route path='/alladdproduct' element={<Addproduct/>}/>
+            <Route path='/contact' element={<ContactUs/>}/>
           </Routes>
         </main>
       </div>

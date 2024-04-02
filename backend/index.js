@@ -8,6 +8,8 @@ const cartRouter=require('./routes/cart')
 const rolesRouter = require("./routes/roles");
 const categoryRouter=require("./routes/category")
 const visitRouter=require('./routes/vistCounter')
+const priceRouter=require('./routes/price')
+const ConatRouter=require('./routes/contactUs')
 const app = express();
 require('dotenv').config()
 const PORT = process.env.PORT || 5000;
@@ -23,6 +25,9 @@ app.use('/cart',cartRouter)
 app.use("/roles", rolesRouter);
 app.use('/category',categoryRouter)
 app.use('/visit',visitRouter)
+app.use('/price',priceRouter)
+app.use('/contact',ConatRouter)
+
 
 
 // Handles any other endpoints [unassigned - endpoints]
