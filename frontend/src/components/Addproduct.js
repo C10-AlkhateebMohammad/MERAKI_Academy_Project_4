@@ -4,22 +4,23 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
 
 export default function Addproduct() {
-    const [products, setProducts] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
-    const { setCartItemsCount }=useContext(UserContext)
+    const { setCartItemsCount } = useContext(UserContext);
     const navigate = useNavigate();
-const token=localStorage.getItem('token')
+    const token = localStorage.getItem('token');
+
     useEffect(() => {
-        axios.get('http://localhost:5000/cart/',{
+        axios.get('http://localhost:5000/cart/', {
             headers: {
                 Authorization: `Bearer ${token}`
-                }
+            }
         })
             .then((res) => {
-                setProducts(res.data.cartItem.map(item => item.product));
+                setCartItems(res.data.cartItem);
                 const priceTotal = res.data.cartItem.reduce((acc, item) => {
                     const price = parseFloat(item.product.price.replace(/[^0-9.]/g, ''));
-                    return acc + price;
+                    return acc + price * item.quantity;
                 }, 0);
                 setTotalPrice(priceTotal);
             })
@@ -30,25 +31,25 @@ const token=localStorage.getItem('token')
 
     const handleCheckout = () => {
         alert("Thank you! Your purchase has been completed successfully.");
-
-        setProducts([]);
+        setCartItems([]);
         setTotalPrice(0);
-        setCartItemsCount(0)
+        setCartItemsCount(0);
     };
-    const back=()=>{
-navigate('/')
+
+    const back = () => {
+        navigate('/');
     }
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
             <h1>Shopping Cart</h1>
-            {products && products.map((product, i) => (
+            {cartItems.map((cartItem, i) => (
                 <div key={i} style={styles.product}>
-                    <img src={product.images[0]} alt={`Image ${i}`} style={styles.image} />
+                    <img src={cartItem.product.images[0]} alt={`Product ${i}`} style={styles.image} />
                     <div>
-                        <p style={styles.name}>{product.Name}</p>
-                        <p style={styles.price}>{product.price}</p>
-                        <p style={styles.brand}>{product.brand}</p>
+                        <p style={styles.name}>{cartItem.product.Name}</p>
+                        <p style={styles.price}>Price: {cartItem.product.price}</p>
+                        <p style={styles.quantity}>Quantity: {cartItem.quantity}</p>
                     </div>
                 </div>
             ))}
@@ -81,8 +82,7 @@ const styles = {
     price: {
         marginBottom: '5px',
     },
-    brand: {
-        color: '#666',
+    quantity: {
         marginBottom: '5px',
     },
     button: {

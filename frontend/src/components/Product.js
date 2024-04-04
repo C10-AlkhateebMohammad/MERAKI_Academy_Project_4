@@ -6,6 +6,7 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
+import image1 from "../images/banner-3.png"
 import { UserContext } from '../App';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
@@ -22,14 +23,16 @@ const Product = () => {
   const { selectedCategory, setToken, token } = useContext(UserContext);
   const { products, setProducts } = useContext(UserContext);
   const [error, setError] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [quantity, setQuantity] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginMessage, setLoginMessage] = useState('');
-  const [cart, setCart] = useState([]);
+  const { cart, setCart } = useContext(UserContext);
   const navigate = useNavigate();
+  const [loginMessage, setLoginMessage] = useState('');
   const { cartItemsCount, setCartItemsCount } = useContext(UserContext);
+
   useEffect(() => {
     axios.get(`http://localhost:5000/product`, { params: { categoryId: selectedCategory } })
       .then((res) => {
@@ -42,10 +45,10 @@ const Product = () => {
   }, [selectedCategory]);
 
   const handleAddToCart = (productId) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token'); 
     console.log(token)
     if (token) {
-      addToCart(productId, quantity);
+      addToCart(productId, quantity[productId]);
     } else {
       navigate('/login');
     }
@@ -65,7 +68,8 @@ const Product = () => {
         if (res) {
           console.log(res.data)
           setCart([...cart, res.data]);
-          setCartItemsCount(cartItemsCount + 1);
+          setCartItemsCount(cartItemsCount + quantity);
+          alert('added has been sucsufully')
 
         } else {
           console.log('err');
@@ -76,15 +80,45 @@ const Product = () => {
       });
   };
 
+  const handleIncreaseQuantity = (productId,increaseAmount) => {
+    setQuantity(prevState => ({
+      ...prevState,
+      [productId]: (prevState[productId] || 0) + 1,
+    }));
+    addToCart(productId, increaseAmount);
+  };
+
+  const handleDecreaseQuantity = (productId) => {
+    setQuantity(prevState => ({
+      ...prevState,
+      [productId]: Math.max((prevState[productId] || 0) - 1, 0),
+    }));
+  };
+
+  const calculateTotalPrice = (productId) => {
+    const product = products.find(product => product._id === productId);
+    if (!product) return 0;
+    const price = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+    return price * (quantity[productId] || 0);
+  };
+
   if (error) {
     return <p>Error fetching products: {error}</p>;
   }
 
-
   return (
     <div className='mo'>
       {loginMessage && <p>{loginMessage}</p>}
-      <img src="https://i.pinimg.com/736x/c7/c2/a4/c7c2a4dbf099987918458d496da246c9.jpg" alt="Description of your image" style={{ width: '100%', height: '50' }} />
+      <div style={{ position: 'relative', textAlign: 'left' }}>
+        <img src={image1} alt="error" style={{ width: '100%', height: '350px' }} />
+        <div style={{ position: 'absolute', top: '50%', left: '10%', transform: 'translate(0, -50%)', color: 'black' }}>
+          <h1>
+            <span style={{ display: 'block' }}>New winter</span>
+            <span style={{ display: 'block' }}>collection 2024</span>
+          </h1>
+          <Button variant="contained" component={Link} to="/winter" color="primary" style={{ marginTop: '20px' }}>Shop Now</Button>
+        </div>
+      </div>
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
           {products.map((product, index) => (
@@ -96,21 +130,27 @@ const Product = () => {
                 <h2>{product.Name}</h2>
                 <p>Price: {product.price}</p>
                 <p>Brand: {product.brand}</p>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Button variant="outlined" onClick={() => handleDecreaseQuantity(product._id)}>-</Button>
+                  <input type="text" value={quantity[product._id] || 0} readOnly style={{ width: '30px', textAlign: 'center' }} />
+                  <Button variant="outlined" onClick={() => handleIncreaseQuantity(product._id)}>+</Button>
+                </div>
                 <Button variant="contained" onClick={() => handleAddToCart(product._id)}>Add to Cart</Button>
+                <p>Total Price: {calculateTotalPrice(product._id)}</p>
               </StyledPaper>
             </Grid>
           ))}
         </Grid>
-
       </Box>
       <div style={{ position: 'relative', textAlign: 'center' }}>
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoawp_NgrvQfGLwv04PfDqhzSiMeGzIBlMVA8OlXx4NBlhMV310JqYTbLJdNpHbNgjjMo&usqp=CAU" alt="Description of your image" style={{ width: '100%', height: 'auto' }} />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoawp_NgrvQfGLwv04PfDqhzSiMeGzIBlMVA8OlXx4NBlhMV310JqYTbLJdNpHbNgjjMo&usqp=CAU" alt="error" style={{ width: '100%', height: '350px' }} />
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'black' }}>
           <h1>EXCLUSIVE OFFERS FOR YOU</h1>
           <h1>online on best sellers product</h1>
+          <Button variant="contained" color="primary" component={Link}
+            to="/bestproduct">Click me</Button>
         </div>
       </div>
-
       <Box sx={{ backgroundColor: '#f5f5f5', padding: '50px 0', textAlign: 'center' }}>
         <h2 style={{ marginBottom: '20px' }}>Contact Us</h2>
         <p style={{ color: '#666', marginBottom: '40px' }}>We'd love to hear from you! Reach out to us for any inquiries or assistance.</p>
@@ -126,7 +166,6 @@ const Product = () => {
         </div>
         <Button variant="contained" color="primary" component={Link} to="/contact" style={{ textDecoration: 'none' }}>Contact Now</Button>
       </Box>
-
     </div>
   );
 };

@@ -46,7 +46,9 @@ const getAllProduct=(req,res)=>{
 }
 
 
+
+
 module.exports={
     creatNewProduct,
-    getAllProduct
+    getAllProduct,
 }

@@ -11,7 +11,7 @@ const cartItemSchema = new mongoose.Schema({
     required: true,
     min: 1
   },
-  
+ 
   createdAt: {
     type: Date,
     default: Date.now

@@ -74,8 +74,7 @@ const modalStyle = {
 };
 
 export default function SearchAppBar() {
-  const { selectedCategory, setselectedCategory, cartItemsCount, setCartItemsCount } = React.useContext(UserContext);
-  const {searchQuery, setSearchQuery}=React.useContext(UserContext)
+  const { selectedCategory, setselectedCategory, cartItemsCount, setCartItemsCount, products, setProducts } = React.useContext(UserContext);
   const [openModal, setOpenModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [categoryProducts, setCategoryProducts] = React.useState([]);
@@ -83,12 +82,10 @@ export default function SearchAppBar() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [addCart, setAddCart] = useState();
   const [quantity, setQuantity] = useState(1);
-  const [searchItem, setSearchItem] = useState('')
-  const {products, setProducts}=React.useContext(UserContext)
+  const [searchItem, setSearchItem] = useState('');
 
-
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearchChange = (event) => {
+    setSearchItem(event.target.value);
   };
 
   const handleOpenModal = () => {
@@ -113,7 +110,7 @@ export default function SearchAppBar() {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/category/caetgories')
+      .get('http://localhost:5000/category/categories')
       .then((res) => {
         setCategoryProducts(res.data.categories);
       })
@@ -143,15 +140,26 @@ export default function SearchAppBar() {
         console.log(err);
       });
   };
-  const filteredProduct = products.filter(product =>
-    product.Name.toLowerCase().includes(searchItem.toLowerCase())
-);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchItem.trim() === '') {
+        setProducts(products);
+      } else {
+        const filteredProduct = products.filter(product =>
+          product.Name.toLowerCase().includes(searchItem.toLowerCase())
+        );
+        setProducts(filteredProduct);
+      }
+    }, 500);
+  
+    return () => clearTimeout(timer);
+  }, [searchItem, setProducts, products]);
   return (
     <>
       {showNavbar && (
         <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static">
+          <AppBar position="static" sx={{backgroundColor: 'white', color: 'black'}}>
             <Toolbar>
               <IconButton
                 size="large"
@@ -200,26 +208,35 @@ export default function SearchAppBar() {
                 <StyledInputBase
                   placeholder="Search…"
                   inputProps={{ 'aria-label': 'search' }}
-                  value={searchItem}
-                  onChange={(e)=>{
-                    setSearchItem(e.target.va)
-                  }}
+                  onChange={handleSearchChange}
                 />
               </Search>
               <Link
-              to='/alladdproduct'
-                 
+                to='/alladdproduct'
               >
                 <ShoppingCartIcon />
                 <Typography variant="caption">{cartItemsCount}</Typography>
               </Link>
-              <Button color="inherit" component={Link} to="/login" onClick={login}>
+              <Button color="inherit" component={Link} to="/login" onClick={login} sx={{color: 'blue'}}>
                 Login
               </Button>
-              <Button color="inherit" component={Link} to="/register" element={<Register />}>
+              <Button
+                color="inherit"
+                component={Link}
+                to="/register"
+                element={<Register />}
+                sx={{
+                  color: 'black',
+                  border: '1px solid white', 
+                  borderRadius: '5px', 
+                  '&:hover': {
+                    borderColor: 'black',   
+                  },
+                }}
+              >
                 Register
               </Button>
-              <Link to="/login" onClick={logout}>
+              <Link to="/login" onClick={logout} sx={{color: 'white'}}>
                 Logout
               </Link>
             </Toolbar>
@@ -235,12 +252,12 @@ export default function SearchAppBar() {
                 Modal Title
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              {addCart && (
-    <div>
-      <p>{addCart.product}</p>
-      {}
-    </div>
-  )}
+                {addCart && (
+                  <div>
+                    <p>{addCart.product}</p>
+                    {}
+                  </div>
+                )}
               </Typography>
             </Box>
           </Modal>
