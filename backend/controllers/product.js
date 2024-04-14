@@ -2,8 +2,8 @@ const productModel=require('../models/productSchema')
 const bodyParser=require('querystring')
 
 const creatNewProduct = (req, res) => {
-    const {Name, price,categoryId, images, brand} = req.body;
-    const newProduct = new productModel({Name, price,categoryId, images, brand});
+    const {Name, price,categoryId, images, brand,tages} = req.body;
+    const newProduct = new productModel({Name, price,categoryId, images, brand,tages});
     newProduct.save()
         .then((result) => {
             res.status(201).json({
@@ -21,13 +21,15 @@ const creatNewProduct = (req, res) => {
 };
 
 const getAllProduct=(req,res)=>{
-    //const categoryId=req.qurey.categoryId
-    const {categoryId}=(bodyParser.parse(req.url.split('?')[1]))
+    const {categoryId,tages}=(bodyParser.parse(req.url.split('?')[1]))
+
     const filter={
 
     }
    if(categoryId)
     Object.assign(filter,{categoryId})
+    if(tages)
+    Object.assign(filter,{tages})
     console.log(filter)
     productModel.find(filter)
     .then((resuilt)=>{

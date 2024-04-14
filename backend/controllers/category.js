@@ -24,8 +24,8 @@ const createCategory = async (req, res) => {
 
 const getAllcaetgories = async (req, res) => {
     try {
-
-        const category = await Category.find();
+console.log("getAllcaetgories")
+        const category = await Category.find({});
 
         if (!category.length) {
             return res.status(404).json({

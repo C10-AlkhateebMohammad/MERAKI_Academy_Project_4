@@ -60,34 +60,34 @@ const getAllCart = (req, res) => {
             });
         });
 }
-const removeProductFromCart = (req, res) => {
-    console.log(req.token.userId)
-    const userId = req.token.userId; 
-    const productId = req.params.productId; 
-    CartModel.deleteOne({ product: productId })
-        .then((result) => {
-            if (result.deletedCount === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Product not found in the user's cart",
-                });
-            }
-            res.status(200).json({
-                success: true,
-                message: "Product removed successfully from the user's cart",
-            });
-        })
-        .catch((err) => {
-            res.status(500).json({
-                success: false,
-                message: "Server error",
-                err: err
-            });
+const deleteCartById = (req, res) => {
+    const id = req.params.id;
+    console.log("hiiii");
+    CartModel
+      .findByIdAndDelete(id)
+      .then((result) => {
+        if (!result) {
+          return res.status(404).json({
+            success: false,
+            message: `The cart with id => ${id} not found`,
+          });
+        }
+        res.status(200).json({
+          success: true,
+          message: `Cart deleted`,
         });
-};
+      })
+      .catch((err) => {
+        res.status(500).json({
+          success: false,
+          message: `Server Error`,
+          err: err.message,
+        });
+      });
+  }
 
 module.exports = {
     addToCart,
     getAllCart,
-    removeProductFromCart
+    deleteCartById
 }

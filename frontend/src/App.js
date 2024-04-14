@@ -23,6 +23,7 @@ const [products, setProducts] = useState([]);
 const [searchQuery, setSearchQuery] = useState('')
 const [cart, setCart] = useState([]);
 
+
 return (
   <UserContext.Provider value={{product, setProduct,selectedCategory,setselectedCategory,cartItemsCount,setCartItemsCount,login,setLogin,token,setToken,products,setProducts,searchQuery,setSearchQuery,cart,setCart}}>
     <div className="App">

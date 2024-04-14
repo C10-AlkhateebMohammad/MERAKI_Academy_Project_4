@@ -18,7 +18,9 @@ import { Link } from 'react-router-dom';
 import Register from './Register';
 import axios from 'axios';
 import { UserContext } from '../App';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import global_en from "./tranzolation/en/global.json"
+import global_ar from "./tranzolation/ar/global.json"
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -74,19 +76,21 @@ const modalStyle = {
 };
 
 export default function SearchAppBar() {
-  const { selectedCategory, setselectedCategory, cartItemsCount, setCartItemsCount, products, setProducts } = React.useContext(UserContext);
+  const { selectedCategory, setselectedCategory, cartItemsCount, setCartItemsCount, products, setProducts,token } = React.useContext(UserContext);
   const [openModal, setOpenModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
+
   const [categoryProducts, setCategoryProducts] = React.useState([]);
   const navigate = useNavigate();
-  const [showNavbar, setShowNavbar] = useState(true);
+  const location = useLocation();
+
+  const [showNavbar, setShowNavbar] = useState((location.pathname.includes("login") || location.pathname.includes("register")) ?false:true);
   const [addCart, setAddCart] = useState();
   const [quantity, setQuantity] = useState(1);
   const [searchItem, setSearchItem] = useState('');
+  const [originalProducts, setOriginalProducts] = useState([]);
 
-  const handleSearchChange = (event) => {
-    setSearchItem(event.target.value);
-  };
+  
 
   const handleOpenModal = () => {
     setOpenModal(true);
@@ -102,7 +106,7 @@ export default function SearchAppBar() {
     setAnchorEl(event.currentTarget);
     const category = event.currentTarget.textContent;
     if (category === 'Shoes') {
-      setCategoryProducts(/* Fetch products for Shoes category */);
+      setCategoryProducts(/* Fetch products for Shoes category*/ );
     } else if (category === 'T-Shirts') {
       setCategoryProducts(/* Fetch products for T-Shirts category */);
     }
@@ -110,14 +114,23 @@ export default function SearchAppBar() {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/category/categories')
+      .get('http://localhost:5000/category/')
       .then((res) => {
+        console.log(res.data.categories)
         setCategoryProducts(res.data.categories);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
+  useEffect(()=>{
+if(location.pathname.includes("login") || location.pathname.includes("register") || location.pathname.includes("contact")){
+  setShowNavbar(false)
+}else
+{
+  setShowNavbar(true)
+}
+  },[location.pathname])
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -140,9 +153,11 @@ export default function SearchAppBar() {
         console.log(err);
       });
   };
-
+  const handleSearchChange = (event) => {
+    setSearchItem(event.target.value);
+  };
   useEffect(() => {
-    const timer = setTimeout(() => {
+   const timer = setTimeout(() => {
       if (searchItem.trim() === '') {
         setProducts(products);
       } else {
@@ -155,12 +170,17 @@ export default function SearchAppBar() {
   
     return () => clearTimeout(timer);
   }, [searchItem, setProducts, products]);
+  
+  
   return (
     <>
       {showNavbar && (
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static" sx={{backgroundColor: 'white', color: 'black'}}>
             <Toolbar>
+              <Typography variant="h6" component={Link} to="/" sx={{color: 'black', fontWeight: 'bold'}}>
+                FashionMart
+              </Typography>
               <IconButton
                 size="large"
                 edge="start"
@@ -177,6 +197,7 @@ export default function SearchAppBar() {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
               >
+                 
                 {categoryProducts.map((item, i) => {
                   return (
                     <MenuItem
@@ -199,7 +220,7 @@ export default function SearchAppBar() {
                 to="/AllCart"
                 sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
               >
-                MUI
+                
               </Typography>
               <Search>
                 <SearchIconWrapper>

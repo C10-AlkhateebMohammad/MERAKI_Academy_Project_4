@@ -1,48 +1,47 @@
-import axios from 'axios'
-import React, { useState } from 'react'
-import '../App.css'
-import { create } from '@mui/material/styles/createTransitions'
-function ContactUs() {
-    const [addContact, setContact] = useState()
-    const [email, setEmail] = useState('')
-    const [subject, setSubject] = useState('')
-    const [message, setMessage] = useState('')
-    const [phoneNumber, setPhoneNumber] = useState('')
+import React, { useState, useRef } from 'react';
+import '../App.css';
+import emailjs from '@emailjs/browser';
 
-    const createContactUs = () => {
-        axios.post('http://localhost:5000/contact/creat', { email, subject, message, phoneNumber })
-            .then((res) => {
-                setContact(res.data)
-                alert('Message sent successfully!');
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-    }
+function ContactUs() {
+    const [showAlert, setShowAlert] = useState(false);
+    const form = useRef();
+
+    const sendEmail = (e) => {
+        e.preventDefault();
+    
+        emailjs
+          .sendForm('service_88z8wpi', 'template_1zhew1y', form.current, {
+            publicKey: 'N-s4SJwnl20wrDvHq',
+          })
+          .then(
+            () => {
+              console.log('SUCCESS!');
+              setShowAlert(true);
+              setTimeout(() => setShowAlert(false), 3000); 
+            },
+            (error) => {
+              console.log('FAILED...', error.text);
+            },
+          );
+      };
 
     return (
         <div className="contact-container">
             <h2>Contact Us</h2>
-            <form className="contact-form" onSubmit={createContactUs}>
-                <label htmlFor="email">Email:</label>
-                <input type="email" id="email"  onChange={(e) => setEmail(e.target.value)} required />
-
-                <label htmlFor="subject">Subject:</label>
-                <input type="text" id="subject"  onChange={(e) => setSubject(e.target.value)} required />
-
-                <label htmlFor="message">Message:</label>
-                <textarea id="message"  onChange={(e) => setMessage(e.target.value)} required></textarea>
-
-                <label htmlFor="phoneNumber">Phone Number:</label>
-                <input type="tel" id="phoneNumber"  onChange={(e) => setPhoneNumber(e.target.value)} />
-
-                <button type="submit" onClick={()=>{
-                    createContactUs()
-                }}>Submit</button>
+            <form ref={form} onSubmit={sendEmail}>
+                <label>Name</label>
+                <input type="text" name="user_name" />
+                <label>Email</label>
+                <input type="email" name="user_email" />
+                <label>Message</label>
+                <textarea name="message" />
+                <input type="submit" value="Send" />
             </form>
-            
+            {showAlert && (
+                <div className="alert">Message sent successfully!</div>
+            )}
         </div>
-    )
+    );
 }
 
 export default ContactUs;

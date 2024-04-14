@@ -21,6 +21,14 @@ const productSchema=new mongoose.Schema({
         type :String,
        
 
+    },
+    oldprice :{
+        type:String
+    },
+    tages:{ 
+        type:[String],
+        required:false 
+        
     }
 })
 

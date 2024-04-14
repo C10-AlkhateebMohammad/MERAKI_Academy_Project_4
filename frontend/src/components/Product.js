@@ -32,7 +32,8 @@ const Product = () => {
   const navigate = useNavigate();
   const [loginMessage, setLoginMessage] = useState('');
   const { cartItemsCount, setCartItemsCount } = useContext(UserContext);
-
+  
+  
   useEffect(() => {
     axios.get(`http://localhost:5000/product`, { params: { categoryId: selectedCategory } })
       .then((res) => {
@@ -45,15 +46,19 @@ const Product = () => {
   }, [selectedCategory]);
 
   const handleAddToCart = (productId) => {
-    const token = localStorage.getItem('token'); 
-    console.log(token)
+    const token = localStorage.getItem('token');
+    console.log(token);
     if (token) {
-      addToCart(productId, quantity[productId]);
+      if (quantity[productId] > 0) { 
+        addToCart(productId, quantity[productId]);
+      } else {
+        alert('Please enter a valid quantity.'); 
+      }
     } else {
-      navigate('/login');
+      navigate('/login'); 
     }
   };
-
+  
   const addToCart = (productId, quantity) => {
     const token = localStorage.getItem('token');
     axios.post('http://localhost:5000/cart/add', {
@@ -65,14 +70,13 @@ const Product = () => {
       }
     })
       .then((res) => {
-        if (res) {
-          console.log(res.data)
+        if (res.data) { 
+          console.log(res.data);
           setCart([...cart, res.data]);
           setCartItemsCount(cartItemsCount + quantity);
-          alert('added has been sucsufully')
-
+          alert('Item has been added successfully');
         } else {
-          console.log('err');
+          console.log('Error adding item to cart');
         }
       })
       .catch((err) => {
@@ -130,6 +134,7 @@ const Product = () => {
                 <h2>{product.Name}</h2>
                 <p>Price: {product.price}</p>
                 <p>Brand: {product.brand}</p>
+                <p>NewPrice : {product.oldprice}</p>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <Button variant="outlined" onClick={() => handleDecreaseQuantity(product._id)}>-</Button>
                   <input type="text" value={quantity[product._id] || 0} readOnly style={{ width: '30px', textAlign: 'center' }} />
@@ -143,7 +148,7 @@ const Product = () => {
         </Grid>
       </Box>
       <div style={{ position: 'relative', textAlign: 'center' }}>
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoawp_NgrvQfGLwv04PfDqhzSiMeGzIBlMVA8OlXx4NBlhMV310JqYTbLJdNpHbNgjjMo&usqp=CAU" alt="error" style={{ width: '100%', height: '350px' }} />
+        <img src="https://www.citypng.com/public/uploads/preview/hd-best-offer-red-logo-sign-transparent-png-11668122464wuu2wbamvx.png" alt="error" style={{ width: '100%', height: '350px' }} />
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'black' }}>
           <h1>EXCLUSIVE OFFERS FOR YOU</h1>
           <h1>online on best sellers product</h1>

@@ -5,7 +5,7 @@ const {createCategory,getAllcaetgories}=require('../controllers/category')
 
 
 categoryRouter.post('/creat',createCategory)
-categoryRouter.get('/caetgories',getAllcaetgories)
+categoryRouter.get('/',getAllcaetgories)
 
 
 
